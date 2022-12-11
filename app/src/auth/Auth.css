@@ -1,0 +1,54 @@
+.form-login {
+    text-align: center;
+    margin:  auto;
+}
+
+.ui-form {
+    text-align: center;
+}
+
+.form-title {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130px;
+    text-align: center;
+    color: #000000;
+    padding-top: 50px;
+    margin-bottom: 50px;
+}
+
+.form-title > h1 {
+    font-size: 50px;
+}
+
+.field > input {
+    width: 300px;
+    height: 30px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    background: transparent;
+    border-top-style: hidden;
+    border-right-style: hidden;
+    border-left-style: hidden;
+    border-bottom: 1px solid black;
+    text-align: center;
+    outline: none;
+}
+
+.ui-form > button {
+    text-align: center;
+    font-size: 20px;
+    width: 170px;
+    height: 40px;
+    margin-top: 20px;
+    background-color: rgb(99, 195, 117) !important;
+    color: aliceblue;
+    border: hidden;
+    margin-bottom: 30px;
+    cursor: pointer;
+  }
+  
+.ui-form > button:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
