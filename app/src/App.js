@@ -1,24 +1,20 @@
-import React, { useEffect, useRef } from 'react'
-import Map from "@arcgis/core/Map";
-import MapView from "@arcgis/core/views/MapView";
+import { BrowserRouter as Router, 
+                          Routes, 
+                          Route } from 'react-router-dom';
+import Home from './Home';
+import Login from './auth/Login';
+import Register from './auth/Register';
 
 function App() {
-  const mapRef = useRef(null);
-
-  useEffect(() => {
-    new MapView({
-      map: new Map({
-        basemap: "streets"
-      }),
-      container: mapRef.current,
-      center: [-115.151507, 36.131516],
-      zoom: 11
-    });
-  }, []);
-
   return (
-    <div ref={mapRef} style={{ height: "100vh", width: "100%"}}>
-
+    <div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
     </div>
   )
 }
