@@ -1,12 +1,13 @@
 import React from 'react'
 import { useState} from "react";
 import './Auth.css'
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth, registerWithEmailAndPassword } from '../firebase';
 
 function Register() {
-  const initialValues = { email: "", password: ""};
+  const initialValues = { username: " ", email: "", password: ""};
   const [formValues, setFormValues] = useState(initialValues);
-  // const [formErrors, setFormErrors] = useState({});
-  // const [isSubmit, setIsSubmit] = useState(false);
+  // const [user, loading, error] = useAuthState(auth);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,6 +16,8 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(formValues);
+    registerWithEmailAndPassword(formValues.username, formValues.email, formValues.password);
   };
 
   return (
@@ -24,6 +27,15 @@ function Register() {
           <h1>Register</h1>
         </div>
         <div className="ui-form">
+          <div className="field">
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={formValues.username}
+              onChange={handleChange}
+            />
+          </div>
           <div className="field">
             <input
               type="text"

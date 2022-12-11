@@ -1,12 +1,13 @@
 import React from 'react'
 import { useState} from 'react';
 import './Auth.css'
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth, logInWithEmailAndPassword } from '../firebase';
 
 function Login() {
   const initialValues = { email: "", password: ""};
 	const [formValues, setFormValues] = useState(initialValues);
-	// const [formErrors, setFormErrors] = useState({});
-	// const [isSubmit, setIsSubmit] = useState(false); 
+	// const [user, loading, error] = useAuthState(auth);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -15,6 +16,7 @@ function Login() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		logInWithEmailAndPassword(formValues.email, formValues.password);
 	};
 
   return (
