@@ -58,7 +58,7 @@ function Register() {
 
           <div className='register-button'>
             <p>Ai deja cont?</p>
-            <a href='/login'><i>Login Now</i></a>
+            <a href='/'><i>Login Now</i></a>
           </div>
         </div>
       </form>

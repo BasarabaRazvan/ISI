@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState} from 'react';
 import './Auth.css'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, logInWithEmailAndPassword } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const initialValues = { email: "", password: ""};
 	const [formValues, setFormValues] = useState(initialValues);
-	// const [user, loading, error] = useAuthState(auth);
+	const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -18,6 +20,13 @@ function Login() {
 		e.preventDefault();
 		logInWithEmailAndPassword(formValues.email, formValues.password);
 	};
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) {
+      navigate("/home");
+    }
+  }, [user, loading, navigate]);
 
   return (
 		<div className="container-login">
