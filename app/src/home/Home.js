@@ -33,10 +33,11 @@ function Home() {
     });
 
     const search = new Search({  
-      view: view
+      view: view,
+      allPlaceholder: "Search for places",        
     });
 
-    view.ui.add(search, "top=right");
+    view.ui.add(search, "top-right");
   }, []);
 
   function findPlaces(view) {
@@ -45,7 +46,7 @@ function Home() {
     const params = {
       categories: ["casino"],
       location: [-115.151507, 36.131516],  // Las vegas
-      outFields: ["PlaceName", "Place_addr"]
+      outFields: ["PlaceName", "Place_addr"],
     }
 
     locator.addressToLocations(geocodingServiceUrl, params).then((results)=> {
