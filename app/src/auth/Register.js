@@ -1,13 +1,11 @@
 import React from 'react'
 import { useState} from "react";
 import './Auth.css'
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, registerWithEmailAndPassword } from '../firebase';
+import { registerWithEmailAndPassword } from '../firebase';
 
 function Register() {
   const initialValues = { username: " ", email: "", password: ""};
   const [formValues, setFormValues] = useState(initialValues);
-  // const [user, loading, error] = useAuthState(auth);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,7 +14,6 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formValues);
     registerWithEmailAndPassword(formValues.username, formValues.email, formValues.password);
   };
 
