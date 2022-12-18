@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
   const initialValues = { email: "", password: ""};
 	const [formValues, setFormValues] = useState(initialValues);
-	const [user, loading, error] = useAuthState(auth);
+	const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
 	const handleChange = (e) => {
