@@ -23,16 +23,16 @@ function Home() {
 
   const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
 
-  useEffect(() => {
-    const view = new MapView({
-      map: new Map({
-        basemap: "streets"
-      }),
-      container: mapRef.current,
-      center: [-115.151507, 36.131516],
-      zoom: 11
-    });
+  const view = new MapView({
+    map: new Map({
+      basemap: "streets"
+    }),
+    container: mapRef.current,
+    center: [-115.151507, 36.131516],
+    zoom: 11
+  });
 
+  useEffect(() => {
     view.popup.actions = [];
 
     view.when(() => {
@@ -52,19 +52,16 @@ function Home() {
       console.log(view.graphics.length);
 
       if (view.graphics.length === 152) {
+        event.mapPoint.latitude = 36.100201190275676;
+        event.mapPoint.longitude = -115.24340045786572;
         addGraphic("origin", event.mapPoint, view);
-      } else if (view.graphics.length === 153) {
+      } else if (view.graphics.length >= 153) {
         searchPoint("destination", event.mapPoint, view, view.graphics.items[152].geometry.latitude, view.graphics.items[152].geometry.longitude);
         getRoute(view); // Call the route service
-
-      } else if (view.graphics.length > 153) {
-        //view.graphics.removeAll();
-        //addGraphic("origin",event.mapPoint, view);
       }
-
     });
   
-  }, []);
+  }, [view]);
 
   function findPlaces(view) {
     const geocodingServiceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
@@ -154,7 +151,6 @@ function Home() {
           }
         }));
     });
-    console.log(nr);
     if (results.length) {
       const g = view.graphics.getItemAt(0);
       view.popup.open({
@@ -191,7 +187,6 @@ function Home() {
         point.latitude = el.geometry.latitude;
 
         view.graphics.removeMany(view.graphics.toArray().filter((g) => g===el));
-        console.log(view.graphics.length);
 
         const graphic = new Graphic({
           symbol: {
@@ -230,27 +225,20 @@ function Home() {
     let arr = [];
 
     view.graphics.toArray().forEach((g) => {
-
       if (g.symbol.color.r === 255 && g.symbol.color.g === 0 && g.symbol.color.b === 0) {
-
         arr.push(g);
-
       }
 
       if (g.symbol.color.r === 0 && g.symbol.color.g === 0 && g.symbol.color.b === 255) {
-
         arr.push(g);
-
       }
-
     });
+
     const routeParams = new RouteParameters({
       stops: new FeatureSet({
         features: arr
       }),
-
       returnDirections: true
-
     });
 
     route.solve(routeUrl, routeParams)
@@ -289,7 +277,40 @@ function Home() {
       .catch(function(error){
           console.log(error);
       })
+  }
 
+  function deleteRoute(view) {
+    view.graphics.items.forEach((el) => {
+      if(el.symbol.color.g === 150)
+        view.graphics.removeMany(view.graphics.toArray().filter((g) => g===el));
+    })
+
+    let ok = 1;
+    while(ok) {
+      ok = 0;
+      view.graphics.items.forEach((el) => {
+        if (el.symbol.color.b === 255) {
+  
+          let point = el.geometry;
+          const graphic = new Graphic({
+            symbol: {
+              type: "simple-marker",
+              color: "black",
+              size: "10px",
+              outline: {
+                color: "#ffffff",
+                width: "2px"
+              }
+            },
+            geometry: point
+          });
+          view.graphics.add(graphic);
+  
+          view.graphics.removeMany(view.graphics.toArray().filter((g) => g===el));
+          ok = 1;
+        }
+      })
+    }
   }
 
   const handleClick = () => {
@@ -298,10 +319,18 @@ function Home() {
     window.location = '/';
   }
 
+  const resetMap = () => {
+    deleteRoute(view);
+  }
+
   return (
     <div className='d-flex row justify-content-end pt-2 m-auto'
       style={{ width: "90vw" }}
     >
+      <button
+        className="btn btn-secondary col-1 offset-11 mb-2"
+        onClick={resetMap} > Reset
+      </button>
       <button
         className="btn btn-secondary col-1 offset-11 mb-2"
         onClick={handleClick} > Log out
