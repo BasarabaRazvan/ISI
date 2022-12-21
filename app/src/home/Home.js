@@ -311,6 +311,8 @@ function Home() {
         }
       })
     }
+
+    view.ui.empty("top-right");
   }
 
   const handleClick = () => {
