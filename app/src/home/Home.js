@@ -32,6 +32,9 @@ function Home() {
     zoom: 11
   });
 
+  let casinos_titles = [];
+  let casinos_addrs = [];
+
   useEffect(() => {
     view.popup.actions = [];
 
@@ -44,24 +47,32 @@ function Home() {
       allPlaceholder: "Search for places",        
     });
 
-    view.ui.add(search, "top-right");
+    view.ui.add(search, "bottom-right");
 
 
     //routing
     view.on("click", function(event){
       console.log(view.graphics.length);
 
-      if (view.graphics.length === 152) {
+      if (view.graphics.length === 152 && event.button === 2) {
         event.mapPoint.latitude = 36.100201190275676;
         event.mapPoint.longitude = -115.24340045786572;
         addGraphic("origin", event.mapPoint, view);
-      } else if (view.graphics.length >= 153) {
+      } else if (view.graphics.length >= 153 && event.button === 2) {
         searchPoint("destination", event.mapPoint, view, view.graphics.items[152].geometry.latitude, view.graphics.items[152].geometry.longitude);
         getRoute(view); // Call the route service
       }
     });
   
   }, [view]);
+
+  function rightclick() {
+    var rightclick;
+    var e = window.event;
+    if (e.which) rightclick = (e.which === 3);
+    else if (e.button) rightclick = (e.button === 2);
+    alert(rightclick); // true or false, you can trap right click here by if comparison
+}
 
   function findPlaces(view) {
     const geocodingServiceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
@@ -129,6 +140,7 @@ function Home() {
     //view.graphics.removeAll();
     let nr = 0;
     results.forEach((result)=>{
+      //console.log(result.attributes.PlaceName);
       nr++;
       view.graphics.add(
         new Graphic({
@@ -186,13 +198,22 @@ function Home() {
         point.longitude = el.geometry.longitude;
         point.latitude = el.geometry.latitude;
 
+        let attributes = el.attributes;
+
         view.graphics.removeMany(view.graphics.toArray().filter((g) => g===el));
 
         const graphic = new Graphic({
+          attributes: attributes,
           symbol: {
             type: "simple-marker",
             color: "blue",
             size: "8px"
+          },
+          popupTemplate: {
+            title: "{PlaceName}",
+            content: "{Place_addr}" + "\n" +
+                    "Longitude:" + Math.round(point.longitude * 100000)/100000 + "\n" + 
+                    "Latitude:" + Math.round(point.latitude * 100000)/100000
           },
           geometry: point
         });
@@ -292,7 +313,10 @@ function Home() {
         if (el.symbol.color.b === 255) {
   
           let point = el.geometry;
+          let attributes = el.attributes;
+
           const graphic = new Graphic({
+            attributes: attributes,
             symbol: {
               type: "simple-marker",
               color: "black",
@@ -301,6 +325,12 @@ function Home() {
                 color: "#ffffff",
                 width: "2px"
               }
+            },
+            popupTemplate: {
+            title: "{PlaceName}",
+            content: "{Place_addr}" + "\n" +
+                    "Longitude:" + Math.round(point.longitude * 100000)/100000 + "\n" + 
+                    "Latitude:" + Math.round(point.latitude * 100000)/100000
             },
             geometry: point
           });
@@ -311,6 +341,8 @@ function Home() {
         }
       })
     }
+
+    view.ui.empty("top-right");
   }
 
   const handleClick = () => {
