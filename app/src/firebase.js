@@ -9,6 +9,9 @@ import {
   getFirestore,
   collection,
   addDoc,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 
   // Your web app's Firebase configuration
@@ -31,7 +34,7 @@ import {
   const formatError = (message) => {
     const newMessage = message.substr(22)
     return "Error: " +  newMessage.substr(0 , newMessage.length - 2);
-  } 
+  }
 
   const logInWithEmailAndPassword = async (email, password) => {
     try {
@@ -60,10 +63,68 @@ import {
     signOut(auth);
   };
 
+  const addCasino = async (name, rate) => {
+    try {
+      await addDoc(collection(db, "win-lose-rate"), {
+        name,
+        rate,
+      });
+    } catch (err) {
+      alert(formatError(err.message))
+    }
+  };
+
+  const searchCasino = async (name) => {
+    try {
+      const Ref = collection(db, "win-lose-rate");
+      // Create a query against the collection.
+      const q = query(Ref, where("name", "==", name));
+      const querySnapshot = await getDocs(q);
+      //console.log(querySnapshot.docs[0].data().rate);
+      return await querySnapshot.docs[0].data().rate;
+    } catch (err) {
+      alert(formatError(err.message))
+    }
+  };
+
+  const addToDBFavourites = async (uid, title) => {
+    try {
+      await addDoc(collection(db, "favourites"), {
+        uid,
+        title,
+      });
+    } catch (err) {
+      alert(formatError(err.message))
+    }
+  };
+
+  const searchFavourites = async (uid) => {
+    try {
+      const Ref = collection(db, "favourites");
+      // Create a query against the collection.
+      const q = query(Ref, where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+      let result = [];
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        result.push(doc.data())
+      })
+     // console.log(result);
+      return result;
+      //return await querySnapshot.docs[0].data();
+    } catch (err) {
+      alert(formatError(err.message))
+    }
+  };
+
 export {
   auth,
   db,
   logInWithEmailAndPassword,
   registerWithEmailAndPassword,
   logout,
+  addCasino,
+  searchCasino,
+  addToDBFavourites,
+  searchFavourites,
 };
