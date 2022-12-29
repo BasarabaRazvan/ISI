@@ -19,46 +19,48 @@ function Register() {
 
   return (
     <div className="container-register">
-      <form onSubmit={handleSubmit}  className="form">
-        <div className="form-title">
-          <h1>Register</h1>
-        </div>
-        <div className="ui-form">
-          <div className="field">
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              value={formValues.username}
-              onChange={handleChange}
-            />
+      <div className="Auth-form-container">
+        <form onSubmit={handleSubmit}  className="form">
+          <div className="form-title">
+            <h1>Register</h1>
           </div>
-          <div className="field">
-            <input
-              type="text"
-              name="email"
-              placeholder="Email"
-              value={formValues.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="field">
-            <input
-              type="password"
-              name="password"
-              placeholder="Parola"
-              value={formValues.password}
-              onChange={handleChange}
-            />
-          </div>
-          <button className="fluid ui button blue">Submit</button>
+          <div className="ui-form">
+            <div className="field">
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formValues.username}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field">
+              <input
+                type="text"
+                name="email"
+                placeholder="Email"
+                value={formValues.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="field">
+              <input
+                type="password"
+                name="password"
+                placeholder="Parola"
+                value={formValues.password}
+                onChange={handleChange}
+              />
+            </div>
+            <button className="fluid ui button blue">Submit</button>
 
-          <div className='register-button'>
-            <p>Ai deja cont?</p>
-            <a href='/'><i>Login Now</i></a>
+            <div className='register-button'>
+              <p>Ai deja cont?</p>
+              <a href='/'><i>Login Now</i></a>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }

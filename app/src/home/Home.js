@@ -25,7 +25,7 @@ function Home() {
 
   const view = new MapView({
     map: new Map({
-      basemap: "streets"
+      basemap: "arcgis-streets-night"
     }),
     container: mapRef.current,
     center: [-115.151507, 36.131516],
@@ -197,7 +197,11 @@ function Home() {
       symbol: {
         type: "simple-marker",
         color: (type === "origin") ? "red" : "black",
-        size: "8px"
+        size: "10px",
+        outline: {
+          color: "black",
+          width: "2px"
+        }
       },
       geometry: point
     });
@@ -227,7 +231,12 @@ function Home() {
           symbol: {
             type: "simple-marker",
             color: "blue",
-            size: "8px"
+            size: "10px",
+            outline: {
+              color: "black",
+              width: "2px"
+            }
+            
           },
           popupTemplate: {
             title: "{PlaceName}",
@@ -287,7 +296,7 @@ function Home() {
         data.routeResults.forEach(function(result) {
           result.route.symbol = {
             type: "simple-line",
-            color: [5, 150, 255],
+            color: [5, 150, 5],
             width: 3
           };
           view.graphics.add(result.route);
@@ -418,35 +427,28 @@ function Home() {
     }
   }
 
-  // function getRandomFloat(min, max, decimals) {
-  //   const str = (Math.random() * (max - min) + min).toFixed(decimals);
-  
-  //   return parseFloat(str);
-  // }
-
   return (
-    <div className='d-flex row justify-content-end pt-2 m-auto'
-      style={{ width: "90vw" }}
-    >
-      <button
-        className="btn btn-secondary col-1 offset-11 mb-2"
-        onClick={addToFavourites} > Favourites
-      </button>
-      <button
-        className="btn btn-secondary col-1 offset-11 mb-2"
-        onClick={resetMap} > Reset
-      </button>
-      <button
-        className="btn btn-secondary col-1 offset-11 mb-2"
-        onClick={handleClick} > Log out
-      </button>
-      <div ref={mapRef}
-        style={{ 
-          height: "90vh", 
-          margin: "auto",
-          marginTop: "10px",
-        }}>
+    <div className='main_container'>
+      <div className='home_container'>
+        <button
+          className="btnHome"
+          onClick={addToFavourites} >Favorites
+        </button>
+        <button
+          className="btnHome"
+          onClick={resetMap} >Reset
+        </button>
+        <button
+          className="btnHome"
+          onClick={handleClick} >Log out
+        </button>
+        <div ref={mapRef}
+          style={{ 
+            height: "70vh", 
+            margin: "auto",
+          }}>
 
+        </div>
       </div>
     </div>
   )

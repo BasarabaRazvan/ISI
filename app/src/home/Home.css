@@ -1,0 +1,31 @@
+.main_container {
+    text-align: center;
+    background-image: url(../images/main_page_photo.jpg);
+    position: fixed;
+    min-width: 100%;
+    min-height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.home_container {
+    margin: auto;
+    width: 80vw;
+    text-align: center;
+}
+
+.btnHome {
+    margin: 7.5vh 5vw 2.5vh 5vw;
+    display: inline-block;
+    width: 170px;
+    height: 40px;
+    background-color: rgb(255, 255, 255) !important;
+    color: rgb(0, 0, 0);
+    border: hidden;
+    border-radius: 15px;
+    box-shadow: 15px 15px 35px 5px rgba(255, 255, 255, 0.5), -15px -15px 35px 5px rgba(255, 255, 255, 0.5);
+}
+
+.esri-view-root {
+    margin-bottom: 100px;
+}
