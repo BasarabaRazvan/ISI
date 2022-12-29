@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
-import { auth, logout } from '../firebase';
-import { useAuthState, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { auth, logout, searchCasino, addToDBFavourites, searchFavourites } from '../firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import esriConfig from "@arcgis/core/config.js";
 import * as locator from "@arcgis/core/rest/locator";
 import Graphic from "@arcgis/core/Graphic";
@@ -31,9 +31,6 @@ function Home() {
     center: [-115.151507, 36.131516],
     zoom: 11
   });
-
-  let casinos_titles = [];
-  let casinos_addrs = [];
 
   useEffect(() => {
     view.popup.actions = [];
@@ -65,14 +62,6 @@ function Home() {
     });
   
   }, [view]);
-
-  function rightclick() {
-    var rightclick;
-    var e = window.event;
-    if (e.which) rightclick = (e.which === 3);
-    else if (e.button) rightclick = (e.button === 2);
-    alert(rightclick); // true or false, you can trap right click here by if comparison
-}
 
   function findPlaces(view) {
     const geocodingServiceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
@@ -137,31 +126,61 @@ function Home() {
 
   function showResults(view, results) {
     view.popup.close();
-    //view.graphics.removeAll();
-    let nr = 0;
     results.forEach((result)=>{
+      //addCasino(result.attributes.PlaceName, getRandomFloat(1.0, 5.0, 1))
       //console.log(result.attributes.PlaceName);
-      nr++;
-      view.graphics.add(
-        new Graphic({
-          attributes: result.attributes,
-          geometry: result.location,
-          symbol: {
-            type: "simple-marker",
-            color: "black",
-            size: "10px",
-            outline: {
-              color: "#ffffff",
-              width: "2px"
+      searchCasino(result.attributes.PlaceName).then(r => 
+        {
+          searchFavourites(user[0].uid).then(arr => {
+            let ok = 1;
+            arr.forEach(elem => {if (elem.title === result.attributes.PlaceName) ok = 0});
+            if (ok === 0) {
+              view.graphics.add(
+                new Graphic({
+                  attributes: result.attributes,
+                  geometry: result.location,
+                  symbol: {
+                    type: "simple-marker",
+                    color: "yellow",
+                    size: "10px",
+                    outline: {
+                      color: "#ffffff",
+                      width: "2px"
+                    }
+                  },
+                  popupTemplate: {
+                    title: "{PlaceName}",
+                    content: "{Place_addr}" + "\n" +
+                            "Longitude:" + Math.round(result.location.longitude * 100000)/100000 + "\n" + 
+                            "Latitude:" + Math.round(result.location.latitude * 100000)/100000 + "\n" + 
+                            "Rate: " + r
+                  }
+                }));
+            } else {
+              view.graphics.add(
+                new Graphic({
+                  attributes: result.attributes,
+                  geometry: result.location,
+                  symbol: {
+                    type: "simple-marker",
+                    color: "black",
+                    size: "10px",
+                    outline: {
+                      color: "#ffffff",
+                      width: "2px"
+                    }
+                  },
+                  popupTemplate: {
+                    title: "{PlaceName}",
+                    content: "{Place_addr}" + "\n" +
+                            "Longitude:" + Math.round(result.location.longitude * 100000)/100000 + "\n" + 
+                            "Latitude:" + Math.round(result.location.latitude * 100000)/100000 + "\n" + 
+                            "Rate: " + r
+                  }
+                }));
             }
-          },
-          popupTemplate: {
-            title: "{PlaceName}",
-            content: "{Place_addr}" + "\n" +
-                    "Longitude:" + Math.round(result.location.longitude * 100000)/100000 + "\n" + 
-                    "Latitude:" + Math.round(result.location.latitude * 100000)/100000
-          }
-        }));
+          });
+      });
     });
     if (results.length) {
       const g = view.graphics.getItemAt(0);
@@ -188,12 +207,13 @@ function Home() {
   function searchPoint(type, point, view, x, y) {
     let minimal_distance = 1000;
     view.graphics.items.forEach((el) => {
-      if(el.symbol.color.r === 0)
+      if(el.symbol.color.r === 0 || (el.symbol.color.r === 255 && el.symbol.color.g === 255))
         minimal_distance = calculate_minimal_distance(minimal_distance, el.geometry.latitude, el.geometry.longitude, point.latitude, point.longitude)
     })
 
     view.graphics.items.forEach((el) => {
-      if (el.symbol.color.r === 0 && minimal_distance === calculate_distance(el.geometry.latitude, el.geometry.longitude, point.latitude, point.longitude)) {
+      if ((el.symbol.color.r === 0 && minimal_distance === calculate_distance(el.geometry.latitude, el.geometry.longitude, point.latitude, point.longitude)) ||
+      (el.symbol.color.r === 255 && el.symbol.color.g === 255 && minimal_distance === calculate_distance(el.geometry.latitude, el.geometry.longitude, point.latitude, point.longitude))) {
 
         point.longitude = el.geometry.longitude;
         point.latitude = el.geometry.latitude;
@@ -315,26 +335,58 @@ function Home() {
           let point = el.geometry;
           let attributes = el.attributes;
 
-          const graphic = new Graphic({
-            attributes: attributes,
-            symbol: {
-              type: "simple-marker",
-              color: "black",
-              size: "10px",
-              outline: {
-                color: "#ffffff",
-                width: "2px"
-              }
-            },
-            popupTemplate: {
-            title: "{PlaceName}",
-            content: "{Place_addr}" + "\n" +
-                    "Longitude:" + Math.round(point.longitude * 100000)/100000 + "\n" + 
-                    "Latitude:" + Math.round(point.latitude * 100000)/100000
-            },
-            geometry: point
+          searchCasino(attributes.PlaceName).then(r => 
+            {
+              searchFavourites(user[0].uid).then(arr => {
+                let ok = 1;
+                arr.forEach(elem => {if (elem.title === attributes.PlaceName) ok = 0});
+                if (ok === 0) {
+                  const graphic = new Graphic({
+                    attributes: attributes,
+                    symbol: {
+                      type: "simple-marker",
+                      color: "yellow",
+                      size: "10px",
+                      outline: {
+                        color: "#ffffff",
+                        width: "2px"
+                      }
+                    },
+                    popupTemplate: {
+                    title: "{PlaceName}",
+                    content: "{Place_addr}" + "\n" +
+                            "Longitude:" + Math.round(point.longitude * 100000)/100000 + "\n" + 
+                            "Latitude:" + Math.round(point.latitude * 100000)/100000 + "\n" + 
+                            "Rate: " + r
+                    },
+                    geometry: point
+                  });
+                  view.graphics.add(graphic);
+                } else {
+                  const graphic = new Graphic({
+                    attributes: attributes,
+                    symbol: {
+                      type: "simple-marker",
+                      color: "black",
+                      size: "10px",
+                      outline: {
+                        color: "#ffffff",
+                        width: "2px"
+                      }
+                    },
+                    popupTemplate: {
+                    title: "{PlaceName}",
+                    content: "{Place_addr}" + "\n" +
+                            "Longitude:" + Math.round(point.longitude * 100000)/100000 + "\n" + 
+                            "Latitude:" + Math.round(point.latitude * 100000)/100000 + "\n" + 
+                            "Rate: " + r
+                    },
+                    geometry: point
+                  });
+                  view.graphics.add(graphic);
+                }
+            });
           });
-          view.graphics.add(graphic);
   
           view.graphics.removeMany(view.graphics.toArray().filter((g) => g===el));
           ok = 1;
@@ -355,10 +407,31 @@ function Home() {
     deleteRoute(view);
   }
 
+  const addToFavourites = () => {
+    //console.log(view.graphics.getItemAt(0).popup.open());
+    if (view.popup.visible) {
+      if(user[0] !== null) {
+        const title = view.popup.title;
+        console.log(title);
+        addToDBFavourites(user[0].uid, title);
+      }
+    }
+  }
+
+  // function getRandomFloat(min, max, decimals) {
+  //   const str = (Math.random() * (max - min) + min).toFixed(decimals);
+  
+  //   return parseFloat(str);
+  // }
+
   return (
     <div className='d-flex row justify-content-end pt-2 m-auto'
       style={{ width: "90vw" }}
     >
+      <button
+        className="btn btn-secondary col-1 offset-11 mb-2"
+        onClick={addToFavourites} > Favourites
+      </button>
       <button
         className="btn btn-secondary col-1 offset-11 mb-2"
         onClick={resetMap} > Reset
