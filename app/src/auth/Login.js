@@ -29,38 +29,40 @@ function Login() {
   }, [user, loading, navigate]);
 
   return (
-		<div className="container-login">
-		<form onSubmit={handleSubmit} className="form">
-			<div className="form-title">
-				<h1>Login</h1>
-			</div>
-			<div className="ui-form">
-				<div className="field">
-					<input
-						type="text"
-						name="email"
-						placeholder="Email"
-						value={formValues.email}
-						onChange={handleChange}
-					/>
+	<div className="container-login">
+		<div className="Auth-form-container">
+			<form onSubmit={handleSubmit} className="form">
+				<div className="form-title">
+					<h1>Login</h1>
 				</div>
-				<div className="field">
-					<input
-						type="password"
-						name="password"
-						placeholder="Parola"
-						value={formValues.password}
-						onChange={handleChange}
-					/>
-				</div>
-				<button className="fluid ui button blue">Submit</button>
+				<div className="ui-form">
+					<div className="field">
+						<input
+							type="text"
+							name="email"
+							placeholder="Email"
+							value={formValues.email}
+							onChange={handleChange}
+						/>
+					</div>
+					<div className="field">
+						<input
+							type="password"
+							name="password"
+							placeholder="Parola"
+							value={formValues.password}
+							onChange={handleChange}
+						/>
+					</div>
+					<button className="fluid ui button blue">Submit</button>
 
-				<div className='register-button'>
-					<p>Nu ai deja cont?</p>
-					<a href='/register'><i>Creaza acum</i></a>
+					<div className='register-button'>
+						<p>Nu ai deja cont?</p>
+						<a href='/register'><i>Creaza acum</i></a>
+					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+		</div>
 	</div>
   )
 }
